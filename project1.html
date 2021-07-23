@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html xmlns:ng="http://angularjs.org" id="ng-app"  ng-app="myApp">
+
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
+    <script>
+      var ieEight=false;
+      var ieSeven=false;
+    </script>
+<!--[if lt IE 9]>
+  <script>
+		var ieEight=true;
+	</script>
+<![endif]-->
+
+<!--[if lt IE 8]>
+  <script>
+    var ieSeven=true;
+	</script>
+<![endif]-->
+
+    <meta charset="utf-8">
+    <title>Project 1</title>
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Andika"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/stylesheet.css">
+    <script src="cookies.js"></script>
+    <script src="data.js"></script>
+
+    <script>
+      if((!(document.getElementById && document.attachEvent)) && (!document.getElementById)){  //redirect browser
+        alert("Your browser doesn't support this application. We recommend you to download another browser.");
+        window.location.href = 'https://www.mozilla.org/en-US/firefox/new/';
+      }
+      var isSafari = ((navigator.appName == "Netscape") && (navigator.userAgent.indexOf("Safari") != -1)); //check safari
+
+      function slideIn(dom,start,speed){ //slide in the node
+        dom.style.left=start;
+        document.getElementById('dropdown_div').appendChild(dom);
+        if(parseInt(start)<10){
+          start = (parseInt(start)+5)+'px'; //move 5px to the right
+          dom.style.left = start;
+          setTimeout(function(){slideIn(dom,start,speed);},speed);
+        }
+      }
+
+      function creatFirstQuestion(datanode){ // create the first node with the data['root']
+        var dropdown_div = document.createElement('div');
+        dropdown_div.setAttribute('id','dropdown_div');
+        var div = document.createElement('div');
+        div.setAttribute('class','dropdown');
+        var Q = document.createElement('h3');
+        Q.appendChild(document.createTextNode(datanode[0]));
+        var sel = document.createElement('select');
+        //if ie7 then use js assign function; if not ie7 use html attribute
+        (ieSeven==true) ? sel.onchange = function(){createNextQestion(this,user_data);}:sel.setAttribute('onchange','createNextQestion(this,user_data)');
+        var opt = document.createElement('option');
+        opt.setAttribute('selected','selected');
+        opt.setAttribute('hidden','hidden');
+        opt.setAttribute('value',' ');
+        opt.appendChild(document.createTextNode('Choose your answer'));
+        sel.appendChild(opt);
+        for(var i=0, len = datanode.length-3; i<len;i++){  //create options in the select
+          var opt = document.createElement('option');
+          opt.setAttribute('value',datanode[i+3]);
+          opt.appendChild(document.createTextNode(datanode[i+3]));
+          sel.appendChild(opt);
+        }
+        div.appendChild(Q);
+        div.appendChild(sel);
+        document.getElementById('body_div').appendChild(dropdown_div); //append the selet to the body
+        slideIn(div,'-300px',10);
+        removeNodeById('init');  // remove all event on the button
+      }
+
+      function removeNodeById(id){ //remove node by id
+        var node = document.getElementById(id).parentNode.removeChild(document.getElementById(id));
+      }
+
+      function fadeIn(dom,start,speed){ //fade in the node
+        dom.style.opacity = start;
+        if(parseFloat(start)<1){
+          start = parseFloat(start) + 0.01;
+          dom.style.opacity = start;
+          setTimeout(function(){fadeIn(dom,start,speed);},speed);
+        }
+      }
+
+      function createNextQestion(dom,user_data){
+        if(dom.parentNode.nextSibling!=null){  //check whether it's the last child
+          while(dom.parentNode.nextSibling!=null){ //delte other children to make sure it's the last child
+            dom.parentNode.parentNode.removeChild(dom.parentNode.parentNode.lastChild);
+          }
+        }
+        if(dom.parentNode.parentNode.nextSibling!=null){ //delete the form and the pic
+          while(dom.parentNode.parentNode.nextSibling!=null){
+            dom.parentNode.parentNode.parentNode.removeChild(dom.parentNode.parentNode.parentNode.lastChild);
+          }
+        }
+        if(dom.value==' '){ //for some browser which the input "choose your answer" isn't hidden in <select>.
+          return;
+        };
+
+        if(data[dom.value][0]==null){ //check whether this is the leaf of the tree
+          createForm(); //create form
+          createSelected(user_data,data[dom.value]); //create pic and the audio
+          return;
+        }
+
+        var div = document.createElement('div'); //start creating the next question
+        div.setAttribute('class','dropdown');
+        var Q = document.createElement('h3'); //create question
+        Q.appendChild(document.createTextNode(data[dom.value][0]));
+        var sel = document.createElement('select');//create answers for selection
+        (ieSeven==true) ? sel.onchange = function(){createNextQestion(this,user_data);}:sel.setAttribute('onchange','createNextQestion(this,user_data)');
+        var opt = document.createElement('option');
+        opt.setAttribute('selected','selected');
+        opt.setAttribute('hidden','hidden');
+        opt.setAttribute('value',' ');
+        opt.appendChild(document.createTextNode('Choose your answer'));
+        sel.appendChild(opt);
+        for(var i=0, len = data[dom.value].length-3; i<len;i++){  //create options in the select
+          var opt = document.createElement('option');
+          opt.setAttribute('value',data[dom.value][i+3]);
+          opt.appendChild(document.createTextNode(data[dom.value][i+3]));
+          sel.appendChild(opt);
+        }
+        div.appendChild(Q);
+        div.appendChild(sel);
+        slideIn(div,'-300px',10);
+
+
+      }
+
+      function createSelected(queue,singer){ //shows what user selected
+        queue.splice(0,queue.length); //empty queue
+        for(var i=0,len=document.getElementsByTagName('select').length;i<len;i++){ //retreive user's selection
+          queue[i] = document.getElementsByTagName('select')[i].value;
+        }
+        var p_info = document.createElement('h2');
+        var info = 'Now singing: A '; //show what user selected
+        if(queue[0]=='Persons'){ //if person
+          info = info+queue[2]+' '+queue[1]+' ';
+          if(queue[3]!='Terry Lin'){
+            info = info+'singer, '+queue[3]+'.';
+          }else{
+            info = info+'singer, '+queue[3]+'. This song is "'+queue[4]+'".';
+          }
+        }else{ //if band
+          info = info+queue[1];
+          if(queue[1]=='Mix-band' || queue[1]=='Girl-band'){
+            info = info+', '+queue[2]+'.';
+          }else{
+            info = info+' which includes '+queue[2]+' members, '+queue[4]+'.'+' They are a '+queue[3]+' band.';
+          }
+        }
+        p_info.appendChild(document.createTextNode(info));
+        var div = document.createElement('div');
+        var emb = (ieEight) ? document.createElement('embed'):document.createElement('audio'); //create audio to play music
+        var src = 'assets/media/audio/'+singer[2];
+        div.setAttribute('class','photo');
+        emb.setAttribute('src',src);
+        emb.setAttribute('autoplay','true');
+        emb.setAttribute('hidden','true');
+        div.appendChild(p_info);
+        div.appendChild(singer[1]);
+        div.appendChild(emb);
+        document.getElementById('body_div').appendChild(div);
+        fadeIn(singer[1],0.1,20);
+      }
+
+      function createForm(){  //create form
+        var div = document.createElement('div');
+        div.setAttribute('class','form');
+        var form = document.createElement('form');
+        var input_first = document.createElement('input');
+        var first = document.createElement('h3');
+        input_first.setAttribute('type','text');
+        input_first.setAttribute('name','first');
+        first.appendChild(document.createTextNode('Your First Name: '));
+        form.appendChild(first);
+        form.appendChild(input_first);
+        var input_last = document.createElement('input');
+        var last = document.createElement('h3');
+        input_last.setAttribute('type','text');
+        input_last.setAttribute('name','last');
+        last.appendChild(document.createTextNode('Your Last Name: '));
+        form.appendChild(last);
+        form.appendChild(input_last);
+        var input_email = document.createElement('input');
+        var email = document.createElement('h3');
+        input_email.setAttribute('type','text');
+        input_email.setAttribute('name','email');
+        email.appendChild(document.createTextNode('Your Email Address: '));
+        form.appendChild(email);
+        form.appendChild(input_email);
+        var submit = document.createElement('input');
+        submit.setAttribute('type','button');
+        submit.setAttribute('value','Submit');
+        submit.setAttribute('id','submit_but');
+        (ieSeven==true)?submit.onclick=storeInfo : submit.setAttribute('onclick','storeInfo()'); //store what the user fills in
+        form.appendChild(submit);
+        div.appendChild(form);
+        document.getElementById('body_div').appendChild(div);
+      }
+
+      function storeInfo(){
+        var first = document.getElementsByTagName('input')[0].value;
+        var last = document.getElementsByTagName('input')[1].value;
+        var email = document.getElementsByTagName('input')[2].value;
+
+        var val = dataValidation(first,last,email); //validate user input
+        for(var i=0, len = document.getElementsByTagName('input').length;i<len;i++){
+          document.getElementsByTagName('input')[i].style.borderColor ='';
+        }
+        if(val.length==0){ //pass the validation
+
+          if(!isSafari){ //if it's not Safari
+            if(window.localStorage){ //if localstroge exist, store the info
+              localStorage.setItem('firstname',first);
+              localStorage.setItem('lastname',last);
+              localStorage.setItem('email',email);
+            }
+          }
+          // use cookies if localstroge doesn't exist
+          if(GetCookie('firstname')==first&&GetCookie('lastname')==last){
+            alert('Hi '+first+' '+last+'. Welcome back!');
+          }else{
+            alert('Thank you '+first+'! Enjoy the music!');
+          }
+          SetCookie('firstname',first);
+          SetCookie('lastname',last);
+          SetCookie('email',email);
+          for(var i=0,len = document.getElementsByTagName('input').length-1; i<len;i++){
+            document.getElementsByTagName('input')[i].value ='';
+          }
+        }else{ //doesn't pass the validation
+          var errmsg = 'Please enter your ';
+          for(var i=0, len = val.length;i<len;i++){
+            if(i!=len-1){
+              errmsg = errmsg+val[i]+', ';
+            }else if(i==len-1 && len>1){
+              errmsg = errmsg+'and '+val[i];
+            }else{
+              errmsg = errmsg+val[i];
+            }
+          }
+          errmsg = errmsg+' again.';
+          alert(errmsg);
+          showErrorArea(val); //mark the error areas
+        }
+      }
+
+      function showErrorArea(val){ //make error fields red
+        for(var i=0,len=val.length;i<len;i++){
+          var name = val[i].slice(0,val[i].indexOf(" "));
+          document.getElementsByName(name)[0].style.borderColor = 'red';
+        }
+      }
+
+      function dataValidation(first,last,email){ //validate the form input
+        var err_cnt = 0;
+        var val = []; //array for error info
+        if(first.indexOf(" ")!=-1||first==''){ //validate first name, shouldn't be empty or " " in it
+          val[err_cnt] = 'first name';
+          err_cnt++;
+        }
+        if(last.indexOf(" ")!=-1||last==''){ //validate last name
+          val[err_cnt] = 'last name';
+          err_cnt++;
+        }
+        if(email.indexOf(" ")!=-1 || email.indexOf("@")==-1 || email.indexOf(".")==-1||email==''){ //validate email, should have "@" and "."
+          val[err_cnt] = 'email address';
+          err_cnt++;
+        }
+        return val; //return wrong fields
+      }
+
+    </script>
+  </head>
+
+
+  <body>
+    <div class="Intro">
+      <h1>Welcome to Voice of Taiwan!</h1>
+      <h2>There are lots of talented voices in Taiwan you should know.</h2>
+      <h2>Don't forget to open your speaker!</h2>
+      <h2><i><span id="init" onclick="creatFirstQuestion(data['root'])">Let's check it out!<span></i></h2>
+    </div>
+    <script>
+      var user_data = []; //create the queue for user selection
+      var body_div = document.createElement('div'); //create a div in the body
+      body_div.setAttribute('id','body_div');
+      document.getElementsByTagName('body')[0].appendChild(body_div);
+    </script>
+  </body>
+</html>

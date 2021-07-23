@@ -1,0 +1,178 @@
+body{
+  width:1000px;
+  margin: 0 auto;
+  background-image: url("../media/img/background1.jpg");
+  background-repeat: no-repeat;
+  background-position:center;
+  background-size: cover;
+  font-family: Andika;
+
+}
+#init{
+  text-decoration: underline;
+}
+
+#init:hover{
+  cursor: pointer;
+  color:blue;
+}
+
+
+
+.Intro h1{
+  text-align: center;
+  font-size: 2.5em;
+  margin-bottom: 1%;
+}
+.Intro h2{
+  text-align: center;
+
+  margin-top: 0;
+  margin-bottom: 1%;
+}
+
+#dropdown_div{
+  width: 320px;
+}
+
+.dropdown{
+  position: relative;
+  left: 10px;
+  margin: 1%;
+  margin-top: 0;
+  border-radius: 10px;
+  padding:3px;
+  padding-top:0;
+  width:300px;
+
+}
+.dropdown h3{
+  margin-top:0;
+  margin-left: 20px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+select{
+  overflow: hidden;
+  cursor: pointer;
+
+  text-align: center;
+  width:250px;
+  height: 50px;
+  margin-left:20px;
+  margin-bottom: 5px;
+  font-size: 1.2em;
+  border: 2px solid pink;
+}
+
+option{
+  cursor: pointer;
+  text-align: center;
+  width:250px;
+  height: 50px;
+  font-size: 1.2em;
+  margin: 0 auto;
+  padding:3px;
+  border: 2px none green;
+}
+
+.photo{
+  text-align: center;
+  margin-left: 1%;
+  padding:1%;
+  padding-top: 0;
+  width:320px;
+}
+.photo h2{
+  margin-top: 0;
+  padding: 0;
+}
+.form{
+  position: relative;
+  margin-left: : 5%;
+  padding:1%;
+  padding-top: 0;
+  width: 220px;
+  height: 300px;
+
+}
+.form h3{
+  margin-top: 0;
+  margin-bottom: 1%;
+}
+.form input{
+  border-color: pink;
+  width: 200px;
+  height: 35px;
+  display: block;
+  border-radius: 5px;
+}
+
+#body_div{
+  display: flex;
+}
+
+#submit_but{
+  position: absolute;
+  right: 10px;
+  font-size: 1em;
+  margin: 5%;
+  width:100px;
+  background-color: none;
+  border: 2px solid pink;
+  cursor: pointer;
+}
+
+@media screen and (min-width: 700px) and (max-width: 900px){
+  body{
+    width:90vw;
+    margin: 0 auto;
+  }
+  #body_div{
+    display: block;
+    position: relative;
+  }
+
+  #dropdown_div{
+    display: inline-block;
+  }
+  .form{
+    margin-left:32px;
+    display: block;
+  }
+  .photo{
+    position: absolute;
+    top:0;
+    right:0;
+    display: inline-block;
+  }
+
+}
+
+
+@media screen and (max-width: 700px){
+  body{
+    width:90vw;
+    margin: 0 auto;
+  }
+  #body_div{
+    display: block;
+  }
+
+  #dropdown_div{
+    width:310px;
+    margin: 0 auto;
+  }
+  .form{
+    width: 200px;
+    margin: 0 auto;
+  }
+  .photo{
+    margin: 0 auto;
+  }
+  #submit_but{
+    position: absolute;
+    right: -10px;
+  }
+
+}
